@@ -1,9 +1,13 @@
-import { app } from "./config/firebase"
-
-console.log(app)
+import Login from "./components/Login"
+import Header from "./components/Header"
 
 function App() {
-    return <h1 className="text-xl font-bold underline">Task Manager</h1>
+    return (
+        <>
+            <Header />
+            <Login />
+        </>
+    )
 }
 
 export default App

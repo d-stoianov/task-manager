@@ -1,11 +1,14 @@
 import { useState } from "react"
 import { auth, googleProvider } from "../config/firebase"
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
-import Registration from "./Registration"
+import Registration from "../components/Registration"
+import { useNavigate } from "react-router-dom"
 
 function Login() {
     const [credentials, setCredentials] = useState(null)
     const [showRegistation, setShowRegistation] = useState(false)
+
+    const navigate = useNavigate()
 
     async function login(method) {
         try {
@@ -16,10 +19,12 @@ function Login() {
                         credentials?.email,
                         credentials?.password
                     )
+                    navigate("/")
                     break
                 }
                 case "google": {
                     await signInWithPopup(auth, googleProvider)
+                    navigate("/")
                     break
                 }
             }

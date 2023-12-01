@@ -1,6 +1,7 @@
 import { auth } from "../config/firebase"
 import { signOut } from "firebase/auth"
 import { useState } from "react"
+import ProfilePicture from "../assets/images/ProfilePicture.jpg"
 
 async function logout() {
     try {
@@ -26,7 +27,8 @@ function Header() {
                 <button onClick={() => setIsMenuOpened(!isMenuOpened)}>
                     <img
                         className="rounded-[50%] w-[3rem] md:w-[4rem]"
-                        src={auth?.currentUser?.photoURL}
+                        src={auth?.currentUser?.photoURL || ProfilePicture}
+                        alt="img"
                     />
                 </button>
 

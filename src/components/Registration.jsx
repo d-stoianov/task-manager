@@ -1,9 +1,12 @@
 import { useState } from "react"
 import { auth } from "../config/firebase"
 import { createUserWithEmailAndPassword } from "firebase/auth"
+import { useNavigate } from "react-router-dom"
 
 function Registration({ changeForm }) {
     const [credentials, setCredentials] = useState(null)
+
+    const navigate = useNavigate()
 
     async function signUp() {
         try {
@@ -12,20 +15,23 @@ function Registration({ changeForm }) {
                 credentials?.email,
                 credentials?.password
             )
+            navigate("/")
         } catch (error) {
             console.error(error)
         }
     }
 
     return (
-        <div className="relative top-[50vh] -translate-y-1/2 md:-translate-y-0  md:top-[20vh] left-[50%] -translate-x-1/2">
-            <h1 className="text-center my-2">Registration</h1>
+        <div className="absolute top-[20%] md:top-[20vh] left-[50%] -translate-x-1/2">
+            <h1 className="text-center my-3 font-bold text-[1.25rem]">
+                Registration
+            </h1>
             <form
-                className="flex flex-col items-center gap-2"
+                className="flex flex-col items-center gap-2 w-[20rem]"
                 onSubmit={(e) => e.preventDefault()}
             >
                 <input
-                    className="border-orange-500 border-2 px-2"
+                    className="border-2 px-2 py-1 rounded-2xl w-full"
                     onChange={(e) =>
                         setCredentials({
                             ...credentials,
@@ -35,7 +41,7 @@ function Registration({ changeForm }) {
                     placeholder="Email.."
                 />
                 <input
-                    className="border-orange-500 border-2 px-2"
+                    className="border-2 px-2 py-1 rounded-2xl w-full"
                     onChange={(e) =>
                         setCredentials({
                             ...credentials,
@@ -46,7 +52,7 @@ function Registration({ changeForm }) {
                     placeholder="Password.."
                 />
                 <input
-                    className="border-orange-500 border-2 px-2"
+                    className="border-2 px-2 py-1 rounded-2xl w-full"
                     onChange={(e) =>
                         setCredentials({
                             ...credentials,
@@ -57,14 +63,14 @@ function Registration({ changeForm }) {
                     placeholder="Confirm your password.."
                 />
                 <button
-                    className="border-2 p-1 my-2 rounded-lg"
+                    className="w-full border-2 p-2 rounded-2xl bg-black text-white font-bold"
                     onClick={signUp}
                 >
                     Sign up
                 </button>
                 <p
                     onClick={() => changeForm(false)}
-                    className="cursor-pointer text-orange-500"
+                    className="cursor-pointer text-blue-600"
                 >
                     Back to Login
                 </p>

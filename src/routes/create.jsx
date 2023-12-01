@@ -13,7 +13,7 @@ function Create() {
     }
 
     return (
-        <main className="w-full h-full flex flex-col items-center justify-between">
+        <main className="w-full mx-auto h-full flex flex-col  justify-between">
             <section className="flex flex-col">
                 <div>
                     <button className="" onClick={() => navigate("/")}>
@@ -43,23 +43,23 @@ function Create() {
                     <div className="py-3 flex flex-col gap-4">
                         <input
                             placeholder="Some title"
-                            className="w-full md:w-[32rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
+                            className="w-full md:w-[36rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
                         ></input>
                         <input
                             placeholder="Description (optional)"
-                            className="w-full md:w-[32rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
+                            className="w-full md:w-[36rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
                         ></input>
                     </div>
                 </section>
             </section>
-            <section className="my-2">
+            <div className="w-full flex justify-center">
                 <button
                     onClick={createTask}
-                    className="w-full md:w-[32rem] h-[3rem] px-3 border rounded-2xl bg-black text-white"
+                    className="w-full my-2 md:w-[36rem] h-[3rem] px-3 border rounded-2xl bg-black text-white"
                 >
                     Create
                 </button>
-            </section>
+            </div>
         </main>
     )
 }

@@ -3,6 +3,7 @@ import ErrorPage from "./error-page"
 import ProtectedRoute from "./routes/protected-route"
 import Root from "./routes/root"
 import Login from "./routes/login"
+import Create from "./routes/create"
 
 const router = createBrowserRouter([
     {
@@ -17,6 +18,15 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: "/create",
+        element: (
+            <ProtectedRoute>
+                <Create />
+            </ProtectedRoute>
+        ),
         errorElement: <ErrorPage />,
     },
 ])

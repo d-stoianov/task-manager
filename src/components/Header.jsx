@@ -23,7 +23,7 @@ function Header() {
                 </h3>
                 <h1 className="md:text-[2.25rem] font-bold">Your tasks (6)</h1>
             </div>
-            <div className="flex items-center justify-start w-[4.25rem] md:w-[10rem] flex-col gap-2 h-[2rem]">
+            <div className="flex flex-col items-center w-[4.25rem] md:w-[10rem] gap-2 relative">
                 <button onClick={() => setIsMenuOpened(!isMenuOpened)}>
                     <img
                         className="rounded-[50%] w-[3rem] md:w-[4rem]"
@@ -32,7 +32,7 @@ function Header() {
                     />
                 </button>
 
-                <div className="text-xs md:text-lg flex items-center">
+                <div className="absolute -bottom-7 md:-bottom-10 text-xs md:text-lg flex items-center">
                     {isMenuOpened && (
                         <button
                             className="rounded-lg border hover:bg-slate-200 px-2"

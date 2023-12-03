@@ -5,6 +5,7 @@ import Registration from "../components/Registration"
 import ForgotPassword from "../components/ForgotPassword"
 import { useNavigate } from "react-router-dom"
 import GoogleLogo from "../assets/images/GoogleLogo.png"
+import service from "../api/service"
 
 function Login() {
     const [credentials, setCredentials] = useState(null)
@@ -17,20 +18,23 @@ function Login() {
         try {
             switch (method) {
                 case "email": {
-                    await signInWithEmailAndPassword(
+                    const res = await signInWithEmailAndPassword(
                         auth,
                         credentials?.email,
                         credentials?.password
                     )
-                    navigate("/")
+
+                    await service.addUser(res?.user?.uid, res?.user?.email)
                     break
                 }
                 case "google": {
-                    await signInWithPopup(auth, googleProvider)
-                    navigate("/")
+                    const res = await signInWithPopup(auth, googleProvider)
+
+                    await service.addUser(res?.user?.uid, res?.user?.email)
                     break
                 }
             }
+            navigate("/")
         } catch (error) {
             console.error(error)
         }

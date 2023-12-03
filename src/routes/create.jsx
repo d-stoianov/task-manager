@@ -2,11 +2,13 @@ import { useNavigate } from "react-router-dom"
 import ArrowBack from "../assets/images/ArrowBack.svg"
 import TrashBin from "../assets/images/TrashBin.svg"
 import { useEffect, useState, useRef } from "react"
+import service from "../api/service"
 
 function Create() {
     const navigate = useNavigate()
     const [categories, setCategories] = useState([])
     const inputRef = useRef(null)
+    const [task, setTask] = useState({})
 
     function createCategory() {
         const newCategory = {
@@ -16,6 +18,7 @@ function Create() {
             selected: false,
             isEditing: true,
         }
+
         setCategories([...categories, newCategory])
     }
 
@@ -27,19 +30,27 @@ function Create() {
             const newCategories = categories.filter(
                 (category) => category.id !== categoryToDelete.id
             )
+            service.deleteCategory(categoryToDelete)
             setCategories(newCategories)
         }
     }
 
-    function handleCategoryNameChange(id, name) {
+    async function handleCategoryNameChange(id, name) {
+        let categoryToCreate = {}
+
         setCategories(
             categories.map((category) => {
                 if (category.id === id) {
-                    return { ...category, name, isEditing: false }
+                    categoryToCreate = { ...category, name, isEditing: false }
+                    return categoryToCreate
                 }
                 return category
             })
         )
+
+        const { isEditing, selected, ...clearCategory } = categoryToCreate
+
+        service.addCategory(clearCategory)
     }
 
     function handleCategoryClick(id) {
@@ -47,8 +58,13 @@ function Create() {
             return category.id === id
         })
 
-        categoryToSelect.selected = !categoryToSelect.selected
+        categories.forEach((category) => (category.selected = false))
 
+        categoryToSelect.selected = true
+
+        const { selected, isEditing, ...clearCategory } = categoryToSelect // exclude selected and isEditing, bc this property is needed only for client
+
+        setTask({ ...task, category: clearCategory })
         setCategories([...categories])
     }
 
@@ -63,30 +79,34 @@ function Create() {
         return "#" + color.join("")
     }
 
-    function createTask() {
-        console.log("create task")
+    function onTaskChange(e) {
+        const { value, id } = e.target
+
+        switch (id) {
+            case "title":
+                setTask({ ...task, title: value })
+                break
+            case "description":
+                setTask({ ...task, description: value })
+                break
+        }
+    }
+
+    async function createTask() {
+        // some validation
+
+        service.addTask(task)
     }
 
     useEffect(() => {
-        // fetch categories
-        setCategories([
-            {
-                id: 1,
-                name: "first category",
-                color: "#e2a2fd",
-                selected: false,
-            },
-            {
-                id: 2,
-                name: "second category",
-                color: "#e2a2fd",
-                selected: false,
-            },
-        ])
+        service.getCategories().then((res) => {
+            setCategories(res)
+        })
     }, [])
 
     useEffect(() => {
         if (inputRef.current) {
+            // focus on new category
             inputRef.current.focus()
         }
     }, [categories])
@@ -113,10 +133,11 @@ function Create() {
                         >
                             +
                         </button>
-                        {categories.map((category, idx) => {
+                        {categories?.map((category, idx) => {
                             if (category.isEditing) {
                                 return (
                                     <input
+                                        maxLength={12}
                                         key={idx}
                                         ref={inputRef}
                                         className="text-center px-3 w-[6rem] h-8 md:h-10 border rounded-2xl bg-white"
@@ -181,10 +202,14 @@ function Create() {
                     </h3>
                     <div className="py-3 flex flex-col gap-4">
                         <input
+                            onChange={(e) => onTaskChange(e)}
+                            id="title"
                             placeholder="Some title"
                             className="w-full md:w-[36rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
                         ></input>
                         <input
+                            onChange={(e) => onTaskChange(e)}
+                            id="description"
                             placeholder="Description (optional)"
                             className="w-full md:w-[36rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
                         ></input>

@@ -8,7 +8,13 @@ function Create() {
     const navigate = useNavigate()
     const [categories, setCategories] = useState([])
     const inputRef = useRef(null)
-    const [task, setTask] = useState({})
+    const [task, setTask] = useState({
+        category: undefined,
+        title: "",
+        description: "",
+    })
+    const [errors, setErrors] = useState({})
+    const [addTaskLoading, setAddTaskLoading] = useState(false)
 
     function createCategory() {
         const newCategory = {
@@ -41,7 +47,11 @@ function Create() {
         setCategories(
             categories.map((category) => {
                 if (category.id === id) {
-                    categoryToCreate = { ...category, name, isEditing: false }
+                    categoryToCreate = {
+                        ...category,
+                        name: name.trim(),
+                        isEditing: false,
+                    }
                     return categoryToCreate
                 }
                 return category
@@ -93,9 +103,50 @@ function Create() {
     }
 
     async function createTask() {
-        // some validation
+        let localErrors = {}
 
-        service.addTask(task)
+        if (!task.category) {
+            localErrors = {
+                ...localErrors,
+                category: "You must select a category for your task.",
+            }
+        } else {
+            localErrors = {
+                ...localErrors,
+                category: "",
+            }
+        }
+
+        if (!task.title) {
+            localErrors = {
+                ...localErrors,
+                title: "You must give your task a title.",
+            }
+        } else {
+            localErrors = {
+                ...localErrors,
+                title: "",
+            }
+        }
+        setErrors(localErrors)
+
+        if (!localErrors.title && !localErrors.category) {
+            setAddTaskLoading(true)
+            try {
+                await service.addTask({
+                    ...task,
+                    title: task.title ? task.title.trim() : "",
+                    description: task.description
+                        ? task.description.trim()
+                        : "",
+                })
+                navigate("/")
+            } catch (error) {
+                console.error("Error adding task:", error)
+            } finally {
+                setAddTaskLoading(false)
+            }
+        }
     }
 
     useEffect(() => {
@@ -169,11 +220,15 @@ function Create() {
                                             onClick={() =>
                                                 handleCategoryClick(category.id)
                                             }
-                                            className="text-center px-3 min-w-[6rem] h-8 md:h-10 border rounded-2xl bg-white"
+                                            className={`text-center px-4 min-w-[6rem] h-8 md:h-10 border rounded-2xl bg-white ${
+                                                category.selected
+                                                    ? "border-[.15rem] border-blue-500 box-border"
+                                                    : ""
+                                            }`}
                                             style={{
                                                 backgroundColor:
                                                     category.selected
-                                                        ? "rgba(0, 0, 0, 0.35)"
+                                                        ? "rgba(0, 0, 0, 0.15)"
                                                         : category.color,
                                             }}
                                         >
@@ -195,6 +250,7 @@ function Create() {
                             }
                         })}
                     </div>
+                    <p className="text-red-500 ml-2 mb-2">{errors?.category}</p>
                 </section>
                 <section>
                     <h3 className="text-slate-700 text-[1rem] md:text-[1.5rem]">
@@ -207,6 +263,7 @@ function Create() {
                             placeholder="Some title"
                             className="w-full md:w-[36rem] h-[2.25rem] md:h-[2.75rem] px-3 border rounded-2xl bg-white"
                         ></input>
+                        <p className="text-red-500 ml-2">{errors?.title}</p>
                         <input
                             onChange={(e) => onTaskChange(e)}
                             id="description"
@@ -219,9 +276,12 @@ function Create() {
             <div className="w-full flex justify-center">
                 <button
                     onClick={createTask}
-                    className="w-full my-2 md:w-[36rem] h-[3rem] px-3 border rounded-2xl bg-black text-white"
+                    disabled={addTaskLoading}
+                    className={`w-full my-2 md:w-[36rem] h-[3rem] px-3 border rounded-2xl bg-black text-white hover:bg-blue-600 transition delay-50 active:bg-blue-700 ${
+                        addTaskLoading ? "cursor-not-allowed" : "cursor-pointer"
+                    }`}
                 >
-                    Create
+                    {addTaskLoading ? "Loading..." : "Create"}
                 </button>
             </div>
         </main>

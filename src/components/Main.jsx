@@ -34,9 +34,14 @@ function Main() {
 
     useEffect(() => {
         const tasksPromise = service.getTasks().then((tasks) => setTasks(tasks))
-        const categoriesPromise = service
-            .getCategories()
-            .then((categories) => setCategories(categories))
+        const categoriesPromise = service.getCategories().then((categories) =>
+            setCategories(
+                categories.map((category) => ({ // open all categories by default
+                    ...category,
+                    opened: true,
+                }))
+            )
+        )
 
         Promise.all([tasksPromise, categoriesPromise])
             .then(() => setLoading(false))
@@ -65,7 +70,7 @@ function Main() {
                     />
                 </div>
             </section>
-            <section className="flex flex-wrap w-full h-full gap-4 my-10">
+            <section className="flex flex-wrap w-full h-full gap-4 my-10 justify-center md:justify-start">
                 {loading ? (
                     <div>Loading...</div>
                 ) : (
@@ -74,7 +79,7 @@ function Main() {
                         : categories
                     ).map((category, idx) => (
                         <div
-                            className="flex flex-col w-[14rem] h-auto"
+                            className="flex flex-col w-[14rem] h-auto "
                             key={idx}
                         >
                             <button
@@ -113,7 +118,7 @@ function Main() {
                                                     <h1 className="text-[1rem] text-center font-bold">
                                                         {task?.title}
                                                     </h1>
-                                                    <p className="text-slate-600  text-left">
+                                                    <p className="text-slate-600 break-words text-left">
                                                         {task?.description}
                                                     </p>
                                                 </button>

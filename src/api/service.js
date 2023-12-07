@@ -1,4 +1,13 @@
-import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore"
+import {
+    doc,
+    updateDoc,
+    getDoc,
+    getDocs,
+    setDoc,
+    collection,
+    query,
+    where,
+} from "firebase/firestore"
 import { auth, db } from "../config/firebase"
 
 class Service {
@@ -20,6 +29,15 @@ class Service {
             throw new Error("User not authenticated")
         }
         return doc(db, "users", userId)
+    }
+
+    async userExist(userEmail) {
+        const usersRef = collection(db, "users")
+        const querySnapshot = await getDocs(
+            query(usersRef, where("email", "==", userEmail))
+        )
+
+        return !querySnapshot.empty
     }
 
     async getCategories() {

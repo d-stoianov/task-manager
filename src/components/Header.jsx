@@ -1,6 +1,6 @@
 import { auth } from "../config/firebase"
 import { signOut } from "firebase/auth"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ProfilePicture from "../assets/images/ProfilePicture.jpg"
 
 async function logout() {
@@ -11,7 +11,7 @@ async function logout() {
     }
 }
 
-function Header() {
+function Header({ tasks }) {
     const [isMenuOpened, setIsMenuOpened] = useState(false)
 
     return (
@@ -21,7 +21,9 @@ function Header() {
                     Hello,{" "}
                     {auth?.currentUser?.displayName || auth?.currentUser?.email}
                 </h3>
-                <h1 className="md:text-[2.25rem] font-bold">Your tasks (6)</h1>
+                <h1 className="md:text-[2.25rem] font-bold">
+                    Your tasks ({tasks.length})
+                </h1>
             </div>
             <div className="flex flex-col items-center w-[4.25rem] md:w-[10rem] gap-2 relative">
                 <button onClick={() => setIsMenuOpened(!isMenuOpened)}>

@@ -54,20 +54,6 @@ class Service {
         }
     }
 
-    async getTasks() {
-        try {
-            const userDocRef = this.getUserDocRef()
-            const response = await getDoc(userDocRef)
-            const tasks = response.data()?.tasks
-            if (tasks) {
-                return tasks
-            }
-            return []
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
     async addCategory(category) {
         try {
             const userDocRef = this.getUserDocRef()
@@ -104,12 +90,64 @@ class Service {
         }
     }
 
+    async getTasks() {
+        try {
+            const userDocRef = this.getUserDocRef()
+            const response = await getDoc(userDocRef)
+            const tasks = response.data()?.tasks
+            if (tasks) {
+                return tasks
+            }
+            return []
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     async addTask(task) {
         try {
             const userDocRef = this.getUserDocRef()
             const tasks = await this.getTasks()
             await updateDoc(userDocRef, {
                 tasks: [...tasks, task],
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async updateTaskField(taskId, field, value) {
+        try {
+            const userDocRef = this.getUserDocRef()
+            const tasks = await this.getTasks()
+
+            const taskIndex = tasks.findIndex((task) => task.id === taskId)
+            if (taskIndex === -1) {
+                throw new Error("Task not found")
+            }
+
+            tasks[taskIndex][field] = value
+
+            await updateDoc(userDocRef, {
+                tasks: tasks,
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async deleteTask(id) {
+        try {
+            const userDocRef = this.getUserDocRef()
+            const tasks = await this.getTasks()
+
+            const updatedTasks = tasks?.filter(
+                // delete each task matching id
+                (task) => task?.id !== id
+            )
+
+            await updateDoc(userDocRef, {
+                tasks: updatedTasks,
             })
         } catch (error) {
             console.log(error)

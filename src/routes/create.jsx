@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom"
 import ArrowBack from "../assets/images/ArrowBack.svg"
-import TrashBin from "../assets/images/TrashBin.svg"
+import DeleteCategory from "../assets/images/DeleteCategory.svg"
 import { useEffect, useState, useRef } from "react"
 import service from "../api/service"
+import { v4 as uuidv4 } from "uuid"
 
 function Create() {
     const navigate = useNavigate()
@@ -18,7 +19,7 @@ function Create() {
 
     function createCategory() {
         const newCategory = {
-            id: Math.floor(Math.random() * 10000 + 1),
+            id: uuidv4(),
             name: "",
             color: generateRandomColor(),
             selected: false,
@@ -139,6 +140,8 @@ function Create() {
                     description: task.description
                         ? task.description.trim()
                         : "",
+                    isChecked: false,
+                    id: uuidv4(),
                 })
                 navigate("/")
             } catch (error) {
@@ -241,7 +244,7 @@ function Create() {
                                             className="absolute z-[100] -top-2 -right-2"
                                         >
                                             <img
-                                                src={TrashBin}
+                                                src={DeleteCategory}
                                                 className=" w-6 h-6"
                                             />
                                         </button>

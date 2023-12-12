@@ -4,7 +4,7 @@ import FolderOpened from "/src/assets/images/FolderOpened.svg"
 import UncheckedBox from "/src/assets/images/UncheckedBox.svg"
 import CheckedBox from "/src/assets/images/CheckedBox.svg"
 import DeleteTask from "/src/assets/images/DeleteTask.svg"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import service from "../api/service"
 
 function Main({ tasks, setTasks }) {
@@ -12,7 +12,8 @@ function Main({ tasks, setTasks }) {
     const [categories, setCategories] = useState([])
     const [searchedCategories, setSearchedCategories] = useState([])
     const [loading, setLoading] = useState(true)
-    const [editingTask, setEditingTask] = useState(null)
+    const titleRef = useRef(null)
+    const descriptionRef = useRef(null)
     const [editedTitle, setEditedTitle] = useState("")
     const [editedDescription, setEditedDescription] = useState("")
 
@@ -59,6 +60,23 @@ function Main({ tasks, setTasks }) {
         setTasks([...newTasks])
     }
 
+    const handleTaskStartEditing = (taskId, field) => {
+        let updatedTasks
+        if (field == "title") {
+            updatedTasks = tasks.map((task) =>
+                task.id === taskId ? { ...task, isTitleEditing: true } : task
+            )
+        } else {
+            updatedTasks = tasks.map((task) =>
+                task.id === taskId
+                    ? { ...task, isDescriptionEditing: true }
+                    : task
+            )
+        }
+
+        setTasks(updatedTasks)
+    }
+
     const handleTitleChange = (e) => {
         setEditedTitle(e.target.value)
     }
@@ -68,6 +86,9 @@ function Main({ tasks, setTasks }) {
     }
 
     async function saveTaskEdit(taskId, field) {
+        if (field == "title" && editedTitle.length == 0) return
+        if (field == "description" && editedDescription.length == 0) return
+
         if (field === "title") {
             await service.updateTaskField(taskId, "title", editedTitle)
         } else {
@@ -82,13 +103,14 @@ function Main({ tasks, setTasks }) {
             task.id === taskId
                 ? {
                       ...task,
+                      isTitleEditing: false,
+                      isDescriptionEditing: false,
                       [field]:
                           field === "title" ? editedTitle : editedDescription,
                   }
                 : task
         )
         setTasks(updatedTasks)
-        setEditingTask(null)
     }
 
     useEffect(() => {
@@ -103,6 +125,16 @@ function Main({ tasks, setTasks }) {
             setLoading(false)
         })
     }, [])
+
+    useEffect(() => {
+        if (titleRef.current) {
+            titleRef.current.focus()
+        }
+
+        if (descriptionRef.current) {
+            descriptionRef.current.focus()
+        }
+    }, [handleTaskStartEditing])
 
     return (
         <main className="flex flex-col w-full my-[3rem]">
@@ -170,9 +202,50 @@ function Main({ tasks, setTasks }) {
                                                     className="w-full border-2 rounded-md p-2 border-blue-300"
                                                 >
                                                     <div className="text-center relative">
-                                                        <h1 className="text-[1rem] text-center font-bold">
-                                                            {task?.title}
-                                                        </h1>
+                                                        {!task.isTitleEditing ? (
+                                                            <h1
+                                                                className="text-[1rem] text-center font-bold"
+                                                                onClick={() =>
+                                                                    handleTaskStartEditing(
+                                                                        task.id,
+                                                                        "title"
+                                                                    )
+                                                                }
+                                                            >
+                                                                {task?.title}
+                                                            </h1>
+                                                        ) : (
+                                                            <input
+                                                                key={idx}
+                                                                ref={titleRef}
+                                                                minLength={1}
+                                                                onChange={(e) =>
+                                                                    handleTitleChange(
+                                                                        e
+                                                                    )
+                                                                }
+                                                                className="text-center px-3"
+                                                                onBlur={() =>
+                                                                    saveTaskEdit(
+                                                                        task.id,
+                                                                        "title"
+                                                                    )
+                                                                }
+                                                                onKeyDown={(
+                                                                    e
+                                                                ) => {
+                                                                    if (
+                                                                        e.key ===
+                                                                        "Enter"
+                                                                    ) {
+                                                                        saveTaskEdit(
+                                                                            task.id,
+                                                                            "title"
+                                                                        )
+                                                                    }
+                                                                }}
+                                                            />
+                                                        )}
                                                         <img
                                                             className="w-10 h-10 absolute -top-2 -left-2 cursor-pointer"
                                                             src={
@@ -198,9 +271,48 @@ function Main({ tasks, setTasks }) {
                                                             alt="deletetask"
                                                         />
                                                     </div>
-                                                    <p className="text-slate-600 break-words text-left">
-                                                        {task?.description}
-                                                    </p>
+                                                    {!task.isDescriptionEditing ? (
+                                                        <p
+                                                            className="text-slate-600 break-words text-left"
+                                                            onClick={() =>
+                                                                handleTaskStartEditing(
+                                                                    task.id,
+                                                                    "description"
+                                                                )
+                                                            }
+                                                        >
+                                                            {task?.description}
+                                                        </p>
+                                                    ) : (
+                                                        <input
+                                                            key={idx}
+                                                            ref={descriptionRef}
+                                                            minLength={1}
+                                                            onChange={(e) =>
+                                                                handleDescriptionChange(
+                                                                    e
+                                                                )
+                                                            }
+                                                            className="text-left px-3"
+                                                            onBlur={() =>
+                                                                saveTaskEdit(
+                                                                    task.id,
+                                                                    "description"
+                                                                )
+                                                            }
+                                                            onKeyDown={(e) => {
+                                                                if (
+                                                                    e.key ===
+                                                                    "Enter"
+                                                                ) {
+                                                                    saveTaskEdit(
+                                                                        task.id,
+                                                                        "description"
+                                                                    )
+                                                                }
+                                                            }}
+                                                        />
+                                                    )}
                                                 </div>
                                             )
                                     })}

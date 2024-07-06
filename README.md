@@ -42,15 +42,18 @@ The app is deployed [here](https://task-manager-beta-rouge.vercel.app)
 3.  Setup .env file:
 
     Create file in the root of the project called `.env`, with the following content:
-    `VITE_API_KEY={apiKey}`
-    `VITE_AUTH_DOMAIN={authDomain}`
-    `VITE_PROJECT_ID={projectId}`
-    `VITE_STORAGE_BUCKET={storageBucket}`
-    `VITE_MESSAGING_SENDER_ID={messagingSenderId}`
-    `VITE_APP_ID={appId}`
-    `VITE_MEASUREMENT_ID={measurementId}`
 
-    _To get your keys for the .env [Firebase console](https://console.firebase.google.com) create a new project and go to settings_
+    ```bash
+    VITE_API_KEY={apiKey}
+    VITE_AUTH_DOMAIN={authDomain}
+    VITE_PROJECT_ID={projectId}
+    VITE_STORAGE_BUCKET={storageBucket}
+    VITE_MESSAGING_SENDER_ID={messagingSenderId}
+    VITE_APP_ID={appId}
+    VITE_MEASUREMENT_ID={measurementId}
+    ```
+
+    _To get your keys for the .env go to [Firebase console](https://console.firebase.google.com) create a new project and go to settings_
 
 4.  Start the development server:
 
